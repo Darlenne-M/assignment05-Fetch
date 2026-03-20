@@ -16,7 +16,7 @@ async function submitUser() {
 
         res = await res.json();
         let container = document.querySelector(".container");
-        console.log(res);
+        container.innerHTML = "";
 
         for (const item of res) {
             addParagraph(container, item, user.userName);
