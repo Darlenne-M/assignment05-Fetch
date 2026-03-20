@@ -5,6 +5,8 @@ async function submitUser() {
     let params = new FormData(document.getElementById("input-form"));
     let jsonBody = JSON.stringify(Object.fromEntries(params));
     let user = JSON.parse(jsonBody);
+    let container = document.querySelector(".container");
+    container.innerHTML = "";
 
     const url = "https://api.github.com/users/" + user.userName + "/repos?sort=created&per_page=10";
 
@@ -15,16 +17,24 @@ async function submitUser() {
         }
 
         res = await res.json();
-        let container = document.querySelector(".container");
-        container.innerHTML = "";
 
+        if (res.length === 0) {
+            const message = document.createElement("p");
+            message.textContent = 'User "${user.userName}" has no repository';
+            container.appendChild(message);
+            return;
+        }
         for (const item of res) {
             addParagraph(container, item, user.userName);
         }
 
     } catch (err) {
-        alert("This account does not exists. Enter a valid userName.")
-        console.error("This account does not exists. Enter a valid userName");
+        console.log(err);
+        const message = document.createElement("p");
+        message.textContent = 'This account does not exists. Enter a valid userName.';
+        container.appendChild(message);
+        return;
+
     }
 
 
