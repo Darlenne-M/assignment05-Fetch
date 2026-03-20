@@ -31,7 +31,7 @@ async function submitUser() {
     } catch (err) {
         console.log(err);
         const message = document.createElement("p");
-        message.textContent = 'This account does not exists. Enter a valid userName.';
+        message.textContent = 'This account does not exist. Enter a valid userName.';
         container.appendChild(message);
         return;
 
