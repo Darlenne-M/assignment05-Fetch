@@ -9,7 +9,13 @@ body {
     padding: 30px;
 }
 
-
+/*style.css*/
+.container {
+  display: flex;  flex-wrap: wrap;  gap: 20px;
+}
+article {
+  border: 1px solid #ccc;  padding: 10px;  width: 200px;
+}
 .container {
     display: flex;
     flex-wrap: wrap;

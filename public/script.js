@@ -1,15 +1,12 @@
 
 
 async function submitUser() {
-    
+
     let params = new FormData(document.getElementById("input-form"));
-    let jsonBody = JSON.stringify(Object.fromEntries(params)); 
+    let jsonBody = JSON.stringify(Object.fromEntries(params));
     let user = JSON.parse(jsonBody);
-    console.log(jsonBody);
-    console.log(user);
-    console.log(user.userName);
+
     const url = "https://api.github.com/users/" + user.userName + "/repos?sort=created&per_page=10";
-    const userUrl = "https://github.com/" + user.userName + "/";
 
     try {
         let res = await fetch(url);
@@ -18,33 +15,58 @@ async function submitUser() {
         }
 
         res = await res.json();
-        let containers = document.getElementsByClassName("repo-container");
-        console.log(containers);
+        let container = document.querySelector(".container");
+        console.log(res);
 
-        for (let i = 0; containers.length && i < res.length; i++) {
-            let repo = res[i];
-            let box = containers[i];
-            box.querySelector(".title").innerHTML = "<a href='" + userUrl + repo.name + "' >" + "<i class='fa-brands fa-github'></i>" + repo.name + "</a>";
-            box.querySelector(".description").textContent = repo.description || "No description";
-            box.querySelector(".create-at").textContent = "Created: " + new Date(repo.created_at).toLocaleDateString();
-            box.querySelector(".updated").textContent = "Updated: " + new Date(repo.updated_at).toLocaleDateString();
-            box.querySelector(".watchers").textContent = "Watchers: " + repo.watchers_count;
-            box.querySelector(".languages").textContent = "Languages: " + repo.language || "none";
-
-            let commitsUrl = repo.commits_url.replace("{/sha}", "");
-            let commitRes = await fetch(commitsUrl);
-            commitRes = await commitRes.json();
-            console.log(commitRes);
-            let count = commitRes.length;
-            console.log(count);
-            box.querySelector(".commits").textContent = "Commits: " + count;
-
+        for (const item of res) {
+            addParagraph(container, item, user.userName);
         }
 
     } catch (err) {
         alert("This account does not exists. Enter a valid userName.")
         console.error("This account does not exists. Enter a valid userName");
     }
+
+
+}
+
+async function addParagraph(container, productObj, userName) {
+    let article = document.createElement("article");
+    const userUrl = "https://github.com/" + userName + "/";
+
+    let heading = document.createElement("h3");
+    heading.innerHTML = "<a href='" + userUrl + productObj.name + "' >" + "<i class='fa-brands fa-github'></i>" + productObj.name + "</a>";
+
+    let para = document.createElement("p");
+    let desciption = document.createTextNode(productObj.description || "No desciption");
+    let date = document.createTextNode("Created: " + new Date(productObj.created_at).toLocaleDateString());
+    let updated = document.createTextNode("Updated: " + new Date(productObj.updated_at).toLocaleDateString());
+    let watchers = document.createTextNode("Watchers: " + productObj.watchers_count);
+    let language = document.createTextNode("Languages: " + productObj.language);
+
+    // Get number of commits
+    let commitsUrl = productObj.commits_url.replace("{/sha}", "");
+    let commitRes = await fetch(commitsUrl);
+    commitRes = await commitRes.json();
+    let count = commitRes.length;
+    let commits = document.createTextNode("Commits: " + count);
+
+    // append elements
+    article.appendChild(heading);
+    para.appendChild(desciption);
+    para.appendChild(document.createElement("br"));
+    para.appendChild(date);
+    para.appendChild(document.createElement("br"));
+    para.appendChild(updated);
+    para.appendChild(document.createElement("br"));
+    para.appendChild(watchers);
+    para.appendChild(document.createElement("br"));
+    para.appendChild(language);
+    para.appendChild(document.createElement("br"));
+    para.appendChild(commits);
+    article.appendChild(para);
+
+    container.appendChild(article);
 
 
 }
